@@ -564,7 +564,16 @@ const tourConfig: TourConfig = {
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+We welcome contributions from the community! Whether you're fixing bugs, adding new features, improving documentation, or helping with testing, your contributions are valuable.
+
+### Quick Start for Contributors
+
+1. **Fork the repository** and clone it locally
+2. **Install dependencies**: `npm install`
+3. **Build the library**: `npm run build`
+4. **Run the example**: `npm run example`
+5. **Make your changes** and test thoroughly
+6. **Submit a pull request**
 
 ## 📄 License
 
