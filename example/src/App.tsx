@@ -21,7 +21,7 @@ const tourConfig: TourConfig = {
       title: "1. Installation & Setup",
       content:
         "Start here - copy the installation command and see how easy it is to get started.",
-      target: '[data-tour="install"]',
+      target: '[data-tour="install-title"]',
       placement: "bottom",
     },
     {
@@ -29,16 +29,16 @@ const tourConfig: TourConfig = {
       title: "2. Basic Usage Example",
       content:
         "This shows the minimal code needed to create your first tour. Notice the clean API design.",
-      target: '[data-tour="basic-code"]',
-      placement: "right",
+      target: '[data-tour="basic-title"]',
+      placement: "bottom",
     },
     {
       id: "smart-targeting",
       title: "3. Smart Element Targeting",
       content:
         "Watch how the tour intelligently finds and highlights elements using CSS selectors.",
-      target: '[data-tour="targeting-demo"]',
-      placement: "top",
+      target: '[data-tour="targeting-title"]',
+      placement: "bottom",
       highlight: {
         padding: 8,
         borderRadius: 12,
@@ -50,40 +50,40 @@ const tourConfig: TourConfig = {
       title: "4. Automated Actions",
       content:
         "The tour can perform actions automatically - like clicking this button for you!",
-      target: '[data-tour="action-demo"]',
-      placement: "left",
+      target: '[data-tour="action-button"]',
+      placement: "top",
     },
     {
       id: "theme-customization",
       title: "5. Theme Customization",
       content:
         "Every aspect is customizable - colors, borders, animations, and positioning.",
-      target: '[data-tour="theme-demo"]',
-      placement: "bottom",
+      target: '[data-tour="theme-colors"]',
+      placement: "top",
     },
     {
       id: "responsive-design",
       title: "6. Responsive & Accessible",
       content:
         "Works perfectly on all devices with full keyboard navigation and screen reader support.",
-      target: '[data-tour="responsive-demo"]',
-      placement: "top",
+      target: '[data-tour="responsive-icon"]',
+      placement: "bottom",
     },
     {
       id: "advanced-features",
       title: "7. Advanced Features",
       content:
         "State persistence, event hooks, conditional steps, custom integrations, and more!",
-      target: '[data-tour="advanced-demo"]',
-      placement: "right",
+      target: '[data-tour="advanced-title"]',
+      placement: "bottom",
     },
     {
       id: "playground",
       title: "8. Interactive Playground",
       content:
         "Try different configurations and see the results instantly in our live playground.",
-      target: '[data-tour="playground"]',
-      placement: "top",
+      target: '[data-tour="playground-title"]',
+      placement: "bottom",
     },
     {
       id: "completion",
@@ -240,7 +240,7 @@ function App() {
         <section className="py-16 bg-slate-50" data-tour="install">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-slate-900 mb-4">
+              <h2 className="text-3xl font-bold text-slate-900 mb-4" data-tour="install-title">
                 Get started in seconds
               </h2>
               <p className="text-lg text-slate-600">
@@ -283,7 +283,7 @@ function App() {
         <section className="py-20 bg-white" data-tour="basic-code">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold text-slate-900 mb-4">
+              <h2 className="text-4xl font-bold text-slate-900 mb-4" data-tour="basic-title">
                 Quick Start
               </h2>
               <p className="text-xl text-slate-600">
@@ -355,7 +355,7 @@ function App() {
         <section className="py-20 bg-slate-50" data-tour="targeting-demo">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold text-slate-900 mb-4">
+              <h2 className="text-4xl font-bold text-slate-900 mb-4" data-tour="targeting-title">
                 Powerful Features
               </h2>
               <p className="text-xl text-slate-600">
@@ -392,6 +392,7 @@ function App() {
                 <button
                   className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
                   onClick={() => setActionDemoClicked(!actionDemoClicked)}
+                  data-tour="action-button"
                 >
                   {actionDemoClicked ? "✅ Clicked!" : "Click Me"}
                 </button>
@@ -409,7 +410,7 @@ function App() {
                 <p className="text-slate-600 mb-4">
                   Customize colors, borders, animations, and positioning
                 </p>
-                <div className="flex space-x-2">
+                <div className="flex space-x-2" data-tour="theme-colors">
                   <div className="w-6 h-6 bg-blue-500 rounded-full border-2 border-white shadow-md"></div>
                   <div className="w-6 h-6 bg-green-500 rounded-full border-2 border-white shadow-md"></div>
                   <div className="w-6 h-6 bg-purple-500 rounded-full border-2 border-white shadow-md"></div>
@@ -419,7 +420,7 @@ function App() {
                 className="bg-white rounded-xl p-6 shadow-lg border border-slate-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
                 data-tour="responsive-demo"
               >
-                <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg flex items-center justify-center text-white text-2xl mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg flex items-center justify-center text-white text-2xl mb-4" data-tour="responsive-icon">
                   📱
                 </div>
                 <h3 className="text-xl font-semibold text-slate-900 mb-2">
@@ -438,7 +439,7 @@ function App() {
         <section className="py-20 bg-white" data-tour="advanced-demo">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold text-slate-900 mb-4">
+              <h2 className="text-4xl font-bold text-slate-900 mb-4" data-tour="advanced-title">
                 Advanced Features
               </h2>
               <p className="text-xl text-slate-600">
@@ -510,7 +511,7 @@ function App() {
         <section className="py-20 bg-slate-50" data-tour="playground">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold text-slate-900 mb-4">
+              <h2 className="text-4xl font-bold text-slate-900 mb-4" data-tour="playground-title">
                 Interactive Playground
               </h2>
               <p className="text-xl text-slate-600">
