@@ -169,7 +169,7 @@ export function createSafeAsyncOperation<T>(
 
 // Error boundary hook for functional components
 export function useErrorBoundary() {
-  const handleError = useCallback((error: Error, errorInfo?: { componentStack: string }) => {
+  const handleError = useCallback((error: Error, _errorInfo?: { componentStack: string }) => {
     // This will be caught by the nearest ErrorBoundary
     throw error;
   }, []);

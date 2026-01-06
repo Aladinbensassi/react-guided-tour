@@ -3,7 +3,6 @@ import { TourEngine } from '../core/TourEngine';
 import { TourActions } from '../core/TourActions';
 import { TourConfig, TourState, TourStep } from '../types';
 import { useErrorHandler } from './useErrorHandler';
-import { useToastErrorHandler } from './useToastErrorHandler';
 
 export interface UseTourEngineReturn {
   state: TourState;
@@ -27,25 +26,14 @@ export interface UseTourEngineReturn {
  * Provides tour control methods and state management with error handling.
  */
 export function useTourEngine(config: TourConfig): UseTourEngineReturn {
-  let errorHandler;
-  try {
-    errorHandler = useToastErrorHandler({
-      onError: (error, context) => {
-        console.error(`Tour Engine Error in ${context}:`, error);
-      },
-      retryAttempts: 1,
-      retryDelay: 500,
-      toastTitle: 'Tour Error',
-    });
-  } catch {
-    errorHandler = useErrorHandler({
-      onError: (error, context) => {
-        console.error(`Tour Engine Error in ${context}:`, error);
-      },
-      retryAttempts: 1,
-      retryDelay: 500,
-    });
-  }
+  // Use regular error handler to avoid ToastProvider dependency issues
+  const errorHandler = useErrorHandler({
+    onError: (error, context) => {
+      console.error(`Tour Engine Error in ${context}:`, error);
+    },
+    retryAttempts: 1,
+    retryDelay: 500,
+  });
   
   const { handleAsyncError } = errorHandler;
 

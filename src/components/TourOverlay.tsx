@@ -10,10 +10,6 @@ export const TourOverlay = React.memo(function TourOverlay({ className }: TourOv
   const { state, theme, stop } = useTour();
   const { targetElement, highlightStyle, isVisible } = useTourHighlight(state.currentStep);
 
-  if (!state.isRunning || !state.currentStep) {
-    return null;
-  }
-
   const overlayStyle: React.CSSProperties = useMemo(() => ({
     position: 'fixed',
     top: 0,
@@ -31,6 +27,10 @@ export const TourOverlay = React.memo(function TourOverlay({ className }: TourOv
       stop();
     }
   }, [state.currentStep?.canSkip, stop]);
+
+  if (!state.isRunning || !state.currentStep) {
+    return null;
+  }
 
   return (
     <>

@@ -26,27 +26,8 @@ export const TourPopover = React.memo(function TourPopover({ className }: TourPo
     setPosition(newPosition);
   }, [targetElement, state.currentStep]);
 
-  useEffect(() => {
-    updatePosition();
-
-    const handleResize = () => updatePosition();
-    const handleScroll = () => updatePosition();
-
-    window.addEventListener('resize', handleResize);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, [updatePosition]);
-
-  if (!state.isRunning || !state.currentStep) {
-    return null;
-  }
-
   const step = state.currentStep;
-  const popoverConfig = useMemo(() => step.popover || {}, [step.popover]);
+  const popoverConfig = useMemo(() => step?.popover || {}, [step?.popover]);
 
   const popoverStyle: React.CSSProperties = useMemo(() => ({
     position: 'absolute',
@@ -94,6 +75,25 @@ export const TourPopover = React.memo(function TourPopover({ className }: TourPo
   const handleClose = useCallback(async () => {
     await stop();
   }, [stop]);
+
+  useEffect(() => {
+    updatePosition();
+
+    const handleResize = () => updatePosition();
+    const handleScroll = () => updatePosition();
+
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [updatePosition]);
+
+  if (!state.isRunning || !state.currentStep) {
+    return null;
+  }
   return (
     <div
       ref={popoverRef}
@@ -159,14 +159,14 @@ export const TourPopover = React.memo(function TourPopover({ className }: TourPo
       {/* Content */}
       <div style={{ padding: '16px 20px' }}>
         {/* Title */}
-        {(popoverConfig.title || step.title) && (
+        {(popoverConfig.title || step?.title) && (
           <h3 style={{
             margin: '0 0 8px 0',
             fontSize: '16px',
             fontWeight: '600',
             color: theme.textColor || '#1f2937',
           }}>
-            {popoverConfig.title || step.title}
+            {popoverConfig.title || step?.title}
           </h3>
         )}
 
@@ -176,7 +176,7 @@ export const TourPopover = React.memo(function TourPopover({ className }: TourPo
           lineHeight: '1.5',
           color: theme.textColor || '#374151',
         }}>
-          {popoverConfig.content || step.content}
+          {popoverConfig.content || step?.content}
         </div>
       </div>
 
@@ -189,7 +189,7 @@ export const TourPopover = React.memo(function TourPopover({ className }: TourPo
         gap: '12px',
       }}>
         {/* Skip button */}
-        {(popoverConfig.showSkip !== false && step.canSkip !== false) && (
+        {(popoverConfig.showSkip !== false && step?.canSkip !== false) && (
           <button
             onClick={(_e) => {
               handleSkip();

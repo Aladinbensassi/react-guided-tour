@@ -1,5 +1,4 @@
-import React, { Component, ReactNode, useEffect } from 'react';
-import { useToast } from './ToastProvider';
+import React, { Component, ReactNode } from 'react';
 
 export interface ErrorInfo {
   componentStack: string;
@@ -18,8 +17,6 @@ export interface ErrorBoundaryProps {
   fallback?: (error: Error, errorInfo: ErrorInfo, retry: () => void) => ReactNode;
   onError?: (error: Error, errorInfo: ErrorInfo) => void;
   isolate?: boolean;
-  useToast?: boolean;
-  toastTitle?: string;
 }
 
 export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
@@ -70,65 +67,60 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
   render() {
     if (this.state.hasError && this.state.error && this.state.errorInfo) {
-      if (this.props.useToast !== false) {
-        return <ErrorBoundaryWithToast {...this.props} error={this.state.error} errorInfo={this.state.errorInfo} retry={this.retry} />;
-      }
-
       if (this.props.fallback) {
         return this.props.fallback(this.state.error, this.state.errorInfo, this.retry);
       }
 
       return (
-        <div
-          style={{
-            padding: '20px',
-            backgroundColor: '#fef2f2',
-            border: '1px solid #fecaca',
-            borderRadius: '8px',
-            color: '#991b1b',
-            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-            fontSize: '14px',
-            maxWidth: '400px',
-            margin: '10px',
-          }}
-        >
-          <h3 style={{ margin: '0 0 12px 0', fontSize: '16px', fontWeight: '600' }}>
-            Tour Error
-          </h3>
-          <p style={{ margin: '0 0 16px 0', lineHeight: '1.5' }}>
-            Something went wrong with the guided tour. This error has been logged for debugging.
-          </p>
-          <details style={{ marginBottom: '16px' }}>
-            <summary style={{ cursor: 'pointer', fontWeight: '500' }}>
+        <div style={{
+          padding: '20px',
+          margin: '20px',
+          border: '2px solid #ff6b6b',
+          borderRadius: '8px',
+          backgroundColor: '#fff5f5',
+          color: '#c92a2a',
+          fontFamily: 'system-ui, sans-serif'
+        }}>
+          <h2 style={{ margin: '0 0 10px 0', fontSize: '18px' }}>
+            Something went wrong
+          </h2>
+          <details style={{ marginBottom: '15px' }}>
+            <summary style={{ cursor: 'pointer', fontWeight: 'bold' }}>
               Error Details
             </summary>
-            <pre
-              style={{
-                marginTop: '8px',
-                padding: '8px',
-                backgroundColor: '#fee2e2',
-                borderRadius: '4px',
-                fontSize: '12px',
-                overflow: 'auto',
-                maxHeight: '200px',
-              }}
-            >
+            <pre style={{ 
+              marginTop: '10px', 
+              padding: '10px', 
+              backgroundColor: '#f8f8f8', 
+              borderRadius: '4px',
+              fontSize: '12px',
+              overflow: 'auto'
+            }}>
               {this.state.error.message}
-              {'\n\n'}
-              {this.state.error.stack}
+              {this.state.error.stack && (
+                <>
+                  {'\n\n'}
+                  {this.state.error.stack}
+                </>
+              )}
+              {this.state.errorInfo.componentStack && (
+                <>
+                  {'\n\nComponent Stack:'}
+                  {this.state.errorInfo.componentStack}
+                </>
+              )}
             </pre>
           </details>
           <button
             onClick={this.retry}
             style={{
-              backgroundColor: '#dc2626',
+              padding: '8px 16px',
+              backgroundColor: '#228be6',
               color: 'white',
               border: 'none',
-              padding: '8px 16px',
-              borderRadius: '6px',
+              borderRadius: '4px',
               cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: '500',
+              fontSize: '14px'
             }}
           >
             Try Again
@@ -156,32 +148,3 @@ export function withErrorBoundary<P extends object>(
   return WrappedComponent;
 }
 
-interface ErrorBoundaryWithToastProps extends ErrorBoundaryProps {
-  error: Error;
-  errorInfo: ErrorInfo;
-  retry: () => void;
-}
-
-function ErrorBoundaryWithToast({ 
-  children, 
-  error, 
-  errorInfo, 
-  retry, 
-  toastTitle = 'Tour Error' 
-}: ErrorBoundaryWithToastProps) {
-  const { showError } = useToast();
-
-  useEffect(() => {
-    const errorDetails = `${error.message}\n\n${error.stack || ''}\n\nComponent Stack:\n${errorInfo.componentStack}`;
-    
-    showError(
-      toastTitle,
-      'Something went wrong with the guided tour. Click for details.',
-      errorDetails
-    );
-    
-    retry();
-  }, [error, errorInfo, showError, retry, toastTitle]);
-
-  return <>{children}</>;
-}
