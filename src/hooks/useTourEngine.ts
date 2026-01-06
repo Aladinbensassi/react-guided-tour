@@ -2,6 +2,8 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { TourEngine } from '../core/TourEngine';
 import { TourActions } from '../core/TourActions';
 import { TourConfig, TourState, TourStep } from '../types';
+import { useErrorHandler } from './useErrorHandler';
+import { useToastErrorHandler } from './useToastErrorHandler';
 
 export interface UseTourEngineReturn {
   state: TourState;
@@ -20,7 +22,33 @@ export interface UseTourEngineReturn {
   actions: TourActions;
 }
 
+/**
+ * Hook that creates and manages a tour engine instance.
+ * Provides tour control methods and state management with error handling.
+ */
 export function useTourEngine(config: TourConfig): UseTourEngineReturn {
+  let errorHandler;
+  try {
+    errorHandler = useToastErrorHandler({
+      onError: (error, context) => {
+        console.error(`Tour Engine Error in ${context}:`, error);
+      },
+      retryAttempts: 1,
+      retryDelay: 500,
+      toastTitle: 'Tour Error',
+    });
+  } catch {
+    errorHandler = useErrorHandler({
+      onError: (error, context) => {
+        console.error(`Tour Engine Error in ${context}:`, error);
+      },
+      retryAttempts: 1,
+      retryDelay: 500,
+    });
+  }
+  
+  const { handleAsyncError } = errorHandler;
+
   const actions = useMemo(() => new TourActions(), []);
   
   const engine = useMemo(() => {
@@ -36,39 +64,49 @@ export function useTourEngine(config: TourConfig): UseTourEngineReturn {
   }, [engine]);
 
   const start = useCallback(async () => {
-    try {
-      await engine.start();
-    } catch (error) {
-      console.error('Error in useTourEngine.start():', error);
-    }
-  }, [engine]);
+    await handleAsyncError(
+      () => engine.start(),
+      'tour start'
+    );
+  }, [engine, handleAsyncError]);
 
   const stop = useCallback(async () => {
     await engine.stop();
   }, [engine]);
 
   const next = useCallback(async () => {
-    const currentStep = engine.getCurrentStep();
-    if (currentStep?.action) {
-      // Execute the step action first
-      await actions.execute(currentStep.action);
-    }
-    await engine.next();
-  }, [engine, actions]);
+    await handleAsyncError(async () => {
+      const currentStep = engine.getCurrentStep();
+      if (currentStep?.action) {
+        // Execute the step action first
+        await actions.execute(currentStep.action);
+      }
+      await engine.next();
+    }, 'tour next');
+  }, [engine, actions, handleAsyncError]);
 
   const previous = useCallback(async () => {
-    await engine.previous();
-  }, [engine]);
+    await handleAsyncError(
+      () => engine.previous(),
+      'tour previous'
+    );
+  }, [engine, handleAsyncError]);
 
   const skip = useCallback(async () => {
-    await engine.skip();
-  }, [engine]);
+    await handleAsyncError(
+      () => engine.skip(),
+      'tour skip'
+    );
+  }, [engine, handleAsyncError]);
 
   const goToStep = useCallback(async (index: number) => {
-    await engine.goToStep(index);
-  }, [engine]);
+    await handleAsyncError(
+      () => engine.goToStep(index),
+      `tour goToStep(${index})`
+    );
+  }, [engine, handleAsyncError]);
 
-  return {
+  const memoizedReturn = useMemo(() => ({
     state,
     start,
     stop,
@@ -83,5 +121,7 @@ export function useTourEngine(config: TourConfig): UseTourEngineReturn {
     currentStep: engine.getCurrentStep(),
     engine,
     actions,
-  };
+  }), [state, start, stop, next, previous, skip, goToStep, engine, actions]);
+
+  return memoizedReturn;
 }

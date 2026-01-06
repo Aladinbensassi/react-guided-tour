@@ -1,6 +1,7 @@
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode, useMemo } from 'react';
 import { TourConfig, TourTheme } from '../types';
 import { useTourEngine, UseTourEngineReturn } from '../hooks/useTourEngine';
+import { ToastProvider } from './ToastProvider';
 
 interface TourContextValue extends UseTourEngineReturn {
   config: TourConfig;
@@ -12,6 +13,8 @@ const TourContext = createContext<TourContextValue | null>(null);
 export interface TourProviderProps {
   config: TourConfig;
   children: ReactNode;
+  enableToasts?: boolean;
+  toastPosition?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
 }
 
 const defaultTheme: TourTheme = {
@@ -40,23 +43,46 @@ const defaultTheme: TourTheme = {
   },
 };
 
-export function TourProvider({ config, children }: TourProviderProps) {
+/**
+ * Main provider component that initializes the tour system and provides context.
+ * Wraps the application with tour functionality and optional toast notifications.
+ */
+export const TourProvider = React.memo(function TourProvider({ 
+  config, 
+  children, 
+  enableToasts = true,
+  toastPosition = 'top-right'
+}: TourProviderProps) {
   const tourEngine = useTourEngine(config);
-  const theme = { ...defaultTheme, ...config.theme };
+  const theme = useMemo(() => ({ ...defaultTheme, ...config.theme }), [config.theme]);
 
-  const contextValue: TourContextValue = {
+  const contextValue: TourContextValue = useMemo(() => ({
     ...tourEngine,
     config,
     theme,
-  };
+  }), [tourEngine, config, theme]);
 
-  return (
+  const content = (
     <TourContext.Provider value={contextValue}>
       {children}
     </TourContext.Provider>
   );
-}
 
+  if (enableToasts) {
+    return (
+      <ToastProvider position={toastPosition}>
+        {content}
+      </ToastProvider>
+    );
+  }
+
+  return content;
+});
+
+/**
+ * Hook to access tour functionality and state.
+ * Must be used within a TourProvider.
+ */
 export function useTour(): TourContextValue {
   const context = useContext(TourContext);
   if (!context) {

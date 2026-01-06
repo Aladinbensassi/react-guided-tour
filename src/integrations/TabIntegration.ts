@@ -17,39 +17,31 @@ export class TabIntegration implements Integration {
       throw new Error(`Tab element not found: ${action.target}`);
     }
 
-    // Handle different tab implementations
     const tabValue = typeof action.value === 'string' ? action.value : undefined;
     await this.handleTabClick(targetElement, tabValue);
   }
 
   private async handleTabClick(tabElement: HTMLElement, tabValue?: string): Promise<void> {
-    // Check for common tab patterns
-    
-    // 1. Radix UI Tabs
     if (this.isRadixTab(tabElement)) {
       await this.handleRadixTab(tabElement);
       return;
     }
 
-    // 2. Material UI Tabs
     if (this.isMaterialUITab(tabElement)) {
       await this.handleMaterialUITab(tabElement);
       return;
     }
 
-    // 3. React Router tabs (links)
     if (this.isRouterTab(tabElement)) {
       await this.handleRouterTab(tabElement);
       return;
     }
 
-    // 4. Custom tabs with data attributes
     if (this.isCustomTab(tabElement)) {
       await this.handleCustomTab(tabElement, tabValue);
       return;
     }
 
-    // 5. Generic button/clickable tab
     await this.handleGenericTab(tabElement);
   }
 

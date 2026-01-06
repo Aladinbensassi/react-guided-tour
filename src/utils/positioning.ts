@@ -1,5 +1,8 @@
 import { ElementPosition, PopoverPosition } from '../types';
 
+/**
+ * Gets the absolute position of an element relative to the document.
+ */
 export function getElementPosition(element: HTMLElement): ElementPosition {
   const rect = element.getBoundingClientRect();
   const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
@@ -15,6 +18,10 @@ export function getElementPosition(element: HTMLElement): ElementPosition {
   };
 }
 
+/**
+ * Calculates the optimal position for a popover relative to a target element.
+ * Falls back to alternative placements if the preferred placement doesn't fit.
+ */
 export function calculatePopoverPosition(
   targetElement: HTMLElement,
   popoverElement: HTMLElement,
@@ -29,7 +36,7 @@ export function calculatePopoverPosition(
     scrollLeft: window.pageXOffset || document.documentElement.scrollLeft,
   };
 
-  const spacing = 12; // Gap between target and popover
+  const spacing = 12;
   const positions = {
     top: {
       top: targetPos.top - popoverRect.height - spacing,
@@ -58,13 +65,13 @@ export function calculatePopoverPosition(
     },
   };
 
-  // Check if preferred placement fits in viewport
+  // Try preferred placement first
   const preferred = positions[preferredPlacement];
   if (isPositionInViewport(preferred, popoverRect, viewport)) {
     return preferred;
   }
 
-  // Try other placements in order of preference
+  // Try fallback placements in order of preference
   const fallbackOrder: Array<keyof typeof positions> = ['bottom', 'top', 'right', 'left', 'center'];
   
   for (const placement of fallbackOrder) {
@@ -76,7 +83,6 @@ export function calculatePopoverPosition(
     }
   }
 
-  // If nothing fits, use center as fallback
   return positions.center;
 }
 
@@ -85,7 +91,7 @@ function isPositionInViewport(
   popoverRect: { width: number; height: number },
   viewport: { width: number; height: number; scrollTop: number; scrollLeft: number }
 ): boolean {
-  const margin = 16; // Minimum margin from viewport edges
+  const margin = 16;
   
   return (
     position.left >= viewport.scrollLeft + margin &&
@@ -95,6 +101,9 @@ function isPositionInViewport(
   );
 }
 
+/**
+ * Smoothly scrolls an element into view.
+ */
 export function scrollToElement(element: HTMLElement, behavior: ScrollBehavior = 'smooth'): void {
   element.scrollIntoView({
     behavior,
@@ -103,6 +112,9 @@ export function scrollToElement(element: HTMLElement, behavior: ScrollBehavior =
   });
 }
 
+/**
+ * Checks if an element is currently visible in the viewport.
+ */
 export function isElementInViewport(element: HTMLElement): boolean {
   const rect = element.getBoundingClientRect();
   return (

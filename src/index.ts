@@ -8,10 +8,15 @@ export { TourProvider, useTour } from './components/TourProvider';
 export { TourRunner } from './components/TourRunner';
 export { TourOverlay } from './components/TourOverlay';
 export { TourPopover } from './components/TourPopover';
+export { ErrorBoundary, withErrorBoundary } from './components/ErrorBoundary';
+export { ToastProvider, useToast } from './components/ToastProvider';
+export { Toast } from './components/Toast';
 
 // Hooks
 export { useTourEngine } from './hooks/useTourEngine';
 export { useTourHighlight } from './hooks/useTourHighlight';
+export { useErrorHandler, useErrorBoundary, createSafeAsyncOperation } from './hooks/useErrorHandler';
+export { useToastErrorHandler } from './hooks/useToastErrorHandler';
 
 // Integrations
 export { TabIntegration } from './integrations/TabIntegration';

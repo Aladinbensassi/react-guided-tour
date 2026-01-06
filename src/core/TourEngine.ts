@@ -1,6 +1,10 @@
 import { TourConfig, TourStep, TourState, TourEngineEvents, TourEventCallback } from '../types';
 import { TourStorage } from './TourStorage';
 
+/**
+ * Core tour engine that manages tour state, navigation, and lifecycle.
+ * Handles step progression, state persistence, and event emission.
+ */
 export class TourEngine {
   private config: TourConfig;
   private state: TourState;
@@ -40,6 +44,9 @@ export class TourEngine {
     return { ...this.config };
   }
 
+  /**
+   * Starts the tour from the current step index.
+   */
   public async start(): Promise<void> {
     try {
       this.setState({ 
@@ -52,14 +59,24 @@ export class TourEngine {
       
       await this.goToStep(this.state.currentStepIndex);
       
-      // STOP HERE - don't auto-advance
       return;
     } catch (error) {
-      console.error('Error in TourEngine.start():', error);
-      this.handleError(error as Error);
+      const errorObj = error as Error;
+      console.error('Error in TourEngine.start():', errorObj);
+      this.handleError(errorObj);
+      
+      this.setState({ 
+        isRunning: false,
+        isLoading: false 
+      });
+      
+      throw errorObj;
     }
   }
 
+  /**
+   * Advances to the next step in the tour.
+   */
   public async next(): Promise<void> {
     if (!this.state.isRunning) {
       return;
@@ -68,32 +85,37 @@ export class TourEngine {
     try {
       const currentStep = this.getCurrentStep();
       if (!currentStep) {
-        return;
+        throw new Error('No current step available for next operation');
       }
 
-      // Execute after step hook
       if (currentStep.afterStep) {
-        await currentStep.afterStep();
+        try {
+          await currentStep.afterStep();
+        } catch (hookError) {
+          console.warn('Error in afterStep hook:', hookError);
+        }
       }
 
-      // Mark step as completed
       this.markStepCompleted(currentStep.id);
 
-      // Check if this is the last step
       if (this.state.currentStepIndex >= this.state.totalSteps - 1) {
         await this.complete();
         return;
       }
 
-      // Go to next step
       const nextStepIndex = this.state.currentStepIndex + 1;
       await this.goToStep(nextStepIndex);
     } catch (error) {
-      console.error('Error in TourEngine.next():', error);
-      this.handleError(error as Error);
+      const errorObj = error as Error;
+      console.error('Error in TourEngine.next():', errorObj);
+      this.handleError(errorObj);
+      throw errorObj;
     }
   }
 
+  /**
+   * Goes back to the previous step in the tour.
+   */
   public async previous(): Promise<void> {
     if (!this.state.isRunning || this.state.currentStepIndex <= 0) return;
 
@@ -104,22 +126,33 @@ export class TourEngine {
     }
   }
 
+  /**
+   * Navigates to a specific step by index.
+   */
   public async goToStep(index: number): Promise<void> {
-    if (index < 0 || index >= this.state.totalSteps) return;
+    if (index < 0 || index >= this.state.totalSteps) {
+      throw new Error(`Invalid step index: ${index}. Must be between 0 and ${this.state.totalSteps - 1}`);
+    }
 
     try {
       this.setState({ isLoading: true });
 
       const step = this.config.steps[index];
       
-      // Execute before step hook
       if (step.beforeStep) {
-        await step.beforeStep();
+        try {
+          await step.beforeStep();
+        } catch (hookError) {
+          console.warn('Error in beforeStep hook:', hookError);
+        }
       }
 
-      // Wait for element if specified
       if (step.waitForElement && step.target) {
-        await this.waitForElement(step.target, step.waitTimeout || 5000);
+        try {
+          await this.waitForElement(step.target, step.waitTimeout || 5000);
+        } catch (waitError) {
+          console.warn(`Element not found: ${step.target}. Continuing anyway.`);
+        }
       }
 
       this.setState({
@@ -128,24 +161,34 @@ export class TourEngine {
         isLoading: false,
       });
 
-
-      // Save state if persistence is enabled
       if (this.config.storage?.remember) {
-        this.storage.saveState(this.state);
+        try {
+          this.storage.saveState(this.state);
+        } catch (storageError) {
+          console.warn('Failed to save tour state:', storageError);
+        }
       }
 
-      // Emit step change event
       this.emit('step-change', { step, index });
       
       if (this.config.onStepChange) {
-        this.config.onStepChange(step, index);
+        try {
+          this.config.onStepChange(step, index);
+        } catch (callbackError) {
+          console.warn('Error in onStepChange callback:', callbackError);
+        }
       }
     } catch (error) {
       this.setState({ isLoading: false });
-      this.handleError(error as Error);
+      const errorObj = error as Error;
+      this.handleError(errorObj);
+      throw errorObj;
     }
   }
 
+  /**
+   * Skips the current tour and marks it as skipped.
+   */
   public async skip(): Promise<void> {
     if (!this.state.isRunning) return;
 
@@ -163,7 +206,6 @@ export class TourEngine {
         this.config.onSkip();
       }
 
-      // Save skip state to localStorage
       if (this.config.storage?.remember) {
         this.storage.saveSkip();
       }
@@ -175,6 +217,9 @@ export class TourEngine {
     }
   }
 
+  /**
+   * Completes the tour and marks it as finished.
+   */
   public async complete(): Promise<void> {
     try {
       this.setState({ isRunning: false, isCompleted: true });
@@ -185,7 +230,6 @@ export class TourEngine {
         this.config.onComplete();
       }
 
-      // Save completion state to localStorage
       if (this.config.storage?.remember) {
         this.storage.saveCompletion();
       }
@@ -222,11 +266,17 @@ export class TourEngine {
     return this.state.isRunning && !this.isFirstStep() && !this.state.isLoading;
   }
 
+  /**
+   * Determines if the tour should be shown based on completion/skip state.
+   */
   public shouldShowTour(): boolean {
     if (!this.config.storage?.remember) return true;
     return !this.storage.isCompleted() && !this.storage.isSkipped();
   }
 
+  /**
+   * Resets tour state and clears localStorage.
+   */
   public resetTourState(): void {
     if (this.config.storage?.remember) {
       this.storage.clearState();
@@ -280,21 +330,37 @@ export class TourEngine {
   }
 
   private handleError(error: Error): void {
+    const errorMessage = error.message || 'Unknown error occurred';
+    const currentStep = this.getCurrentStep();
+    
     this.setState({ 
-      error: error.message,
+      error: errorMessage,
       isLoading: false,
     });
     
-    this.emit('error', { error, step: this.getCurrentStep() || undefined });
+    this.emit('error', { 
+      error, 
+      step: currentStep || undefined,
+      tourId: this.config.id,
+      stepIndex: this.state.currentStepIndex,
+      timestamp: new Date().toISOString()
+    });
+    
+    console.error('TourEngine Error Details:', {
+      message: errorMessage,
+      stack: error.stack,
+      tourId: this.config.id,
+      currentStep: currentStep?.id,
+      stepIndex: this.state.currentStepIndex,
+      state: this.state
+    });
   }
 
   private setState(updates: Partial<TourState>): void {
     this.state = { ...this.state, ...updates };
-    // Emit state change event to notify subscribers
     this.emit('state-change', this.state);
   }
 
-  // Event system
   public on<K extends keyof TourEngineEvents>(
     event: K,
     callback: TourEventCallback<TourEngineEvents[K]>
@@ -325,10 +391,13 @@ export class TourEngine {
     }
   }
 
+  /**
+   * Subscribes to tour state changes.
+   * Returns an unsubscribe function.
+   */
   public subscribe(callback: (state: TourState) => void): () => void {
     const handler = () => callback(this.getState());
     
-    // Listen to all events that might change state
     this.on('step-change', handler);
     this.on('tour-start', handler);
     this.on('tour-complete', handler);
@@ -336,7 +405,6 @@ export class TourEngine {
     this.on('error', handler);
     this.on('state-change', handler);
 
-    // Return unsubscribe function
     return () => {
       this.off('step-change', handler);
       this.off('tour-start', handler);

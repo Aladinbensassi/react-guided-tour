@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { useTour } from './TourProvider';
 import { useTourHighlight } from '../hooks/useTourHighlight';
 
@@ -6,7 +6,7 @@ export interface TourOverlayProps {
   className?: string;
 }
 
-export function TourOverlay({ className }: TourOverlayProps) {
+export const TourOverlay = React.memo(function TourOverlay({ className }: TourOverlayProps) {
   const { state, theme, stop } = useTour();
   const { targetElement, highlightStyle, isVisible } = useTourHighlight(state.currentStep);
 
@@ -14,7 +14,7 @@ export function TourOverlay({ className }: TourOverlayProps) {
     return null;
   }
 
-  const overlayStyle: React.CSSProperties = {
+  const overlayStyle: React.CSSProperties = useMemo(() => ({
     position: 'fixed',
     top: 0,
     left: 0,
@@ -24,13 +24,13 @@ export function TourOverlay({ className }: TourOverlayProps) {
     opacity: theme.overlay?.opacity || 0.5,
     zIndex: (theme.zIndex || 9999) - 1,
     pointerEvents: 'auto',
-  };
+  }), [theme.overlay?.backgroundColor, theme.overlay?.opacity, theme.zIndex]);
 
-  const handleOverlayClick = () => {
+  const handleOverlayClick = useCallback(() => {
     if (state.currentStep?.canSkip !== false) {
       stop();
     }
-  };
+  }, [state.currentStep?.canSkip, stop]);
 
   return (
     <>
@@ -82,4 +82,4 @@ export function TourOverlay({ className }: TourOverlayProps) {
       `}</style>
     </>
   );
-}
+});

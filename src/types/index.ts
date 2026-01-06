@@ -112,7 +112,7 @@ export interface TourEngineEvents {
   'tour-start': { tourId: string };
   'tour-complete': { tourId: string };
   'tour-skip': { tourId: string; stepIndex: number };
-  'error': { error: Error; step?: TourStep };
+  'error': { error: Error; step?: TourStep; tourId?: string; stepIndex?: number; timestamp?: string };
   'state-change': TourState;
 }
 

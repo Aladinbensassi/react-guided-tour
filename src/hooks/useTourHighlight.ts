@@ -8,6 +8,10 @@ export interface UseTourHighlightReturn {
   isVisible: boolean;
 }
 
+/**
+ * Hook that manages element highlighting for tour steps.
+ * Finds target elements, positions highlights, and handles dynamic content.
+ */
 export function useTourHighlight(step: TourStep | null): UseTourHighlightReturn {
   const [targetElement, setTargetElement] = useState<HTMLElement | null>(null);
   const [highlightStyle, setHighlightStyle] = useState<React.CSSProperties>({});
@@ -21,6 +25,7 @@ export function useTourHighlight(step: TourStep | null): UseTourHighlightReturn 
       return;
     }
 
+    // Find target element and update highlight styling
     const findAndHighlightElement = () => {
       const element = step.highlight?.element || 
                     document.querySelector(step.target!) as HTMLElement;
@@ -30,7 +35,6 @@ export function useTourHighlight(step: TourStep | null): UseTourHighlightReturn 
         updateHighlightStyle(element, step.highlight);
         setIsVisible(true);
 
-        // Scroll to element if not in viewport
         if (!isElementInViewport(element)) {
           scrollToElement(element);
         }
@@ -40,10 +44,9 @@ export function useTourHighlight(step: TourStep | null): UseTourHighlightReturn 
       }
     };
 
-    // Initial attempt to find element
     findAndHighlightElement();
 
-    // Set up mutation observer to watch for DOM changes
+    // Watch for DOM changes if element not found initially
     if (!targetElement && step.waitForElement !== false) {
       observerRef.current = new MutationObserver(() => {
         findAndHighlightElement();
@@ -65,7 +68,7 @@ export function useTourHighlight(step: TourStep | null): UseTourHighlightReturn 
     };
   }, [step?.target, step?.highlight, step?.waitForElement, targetElement]);
 
-  // Update highlight position when element moves (e.g., during animations)
+  // Update highlight position when element moves
   useEffect(() => {
     if (!targetElement || !isVisible) return;
 
@@ -79,7 +82,6 @@ export function useTourHighlight(step: TourStep | null): UseTourHighlightReturn 
     window.addEventListener('scroll', handleScroll, { passive: true });
     window.addEventListener('resize', handleResize, { passive: true });
 
-    // Use ResizeObserver to watch for element size changes
     let resizeObserver: ResizeObserver | null = null;
     if (window.ResizeObserver) {
       resizeObserver = new ResizeObserver(updatePosition);
@@ -95,6 +97,9 @@ export function useTourHighlight(step: TourStep | null): UseTourHighlightReturn 
     };
   }, [targetElement, isVisible, step?.highlight]);
 
+  /**
+   * Updates the highlight style based on element position and configuration.
+   */
   const updateHighlightStyle = (element: HTMLElement, config?: HighlightConfig) => {
     const position = getElementPosition(element);
     const padding = config?.padding || 4;
