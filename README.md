@@ -5,20 +5,20 @@
 
 A modern, flexible React TypeScript tour guide library with advanced highlighting and interaction capabilities. Built for React 19 with a clean, modular architecture that supports complex user onboarding flows.
 
-## ✨ Features
+## Features
 
-- 🎯 **Smart Element Targeting** - Flexible element selection with CSS selectors or direct element references
-- 🎨 **Modern UI Design** - Beautiful, customizable popover with smooth animations
-- 🔧 **Pluggable Architecture** - Extensible integration system for tabs, wizards, and navigation
-- 📱 **Responsive Positioning** - Intelligent popover placement that adapts to viewport constraints
-- 🎭 **Theme Support** - Comprehensive theming with light/dark mode compatibility
-- 💾 **State Persistence** - localStorage integration to remember tour completion and progress
-- ⚡ **Performance Optimized** - Framework-agnostic core with efficient React integration
-- 🎪 **Action System** - Automated interactions (clicks, navigation, tab switching)
-- 🔄 **Event System** - Rich event hooks for tour lifecycle management
-- 🎯 **TypeScript First** - Full type safety with comprehensive type definitions
+- **Smart Element Targeting** - Flexible element selection with CSS selectors or direct element references
+- **Modern UI Design** - Beautiful, customizable popover with smooth animations
+- **Pluggable Architecture** - Extensible integration system for tabs, wizards, and navigation
+- **Responsive Positioning** - Intelligent popover placement that adapts to viewport constraints
+- **Theme Support** - Comprehensive theming with light/dark mode compatibility
+- **State Persistence** - localStorage integration to remember tour completion and progress
+- **Performance Optimized** - Framework-agnostic core with efficient React integration
+- **Action System** - Automated interactions (clicks, navigation, tab switching)
+- **Event System** - Rich event hooks for tour lifecycle management
+- **TypeScript First** - Full type safety with comprehensive type definitions
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Installation
 
@@ -127,7 +127,7 @@ function StartTourButton() {
 }
 ```
 
-## 📖 API Reference
+## API Reference
 
 ### TourConfig
 
@@ -220,7 +220,7 @@ interface TourTheme {
 }
 ```
 
-## 🎯 Advanced Usage
+## Advanced Usage
 
 ### Custom Actions
 
@@ -422,7 +422,7 @@ const tourConfig: TourConfig = {
 };
 ```
 
-## 🎨 Styling
+## Styling
 
 ### CSS Custom Properties
 
@@ -463,7 +463,7 @@ Add custom styling with CSS classes:
 }
 ```
 
-## 🔧 Integration Examples
+## Integration Examples
 
 ### React Router Integration
 
@@ -565,7 +565,7 @@ const tourConfig: TourConfig = {
 };
 ```
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions from the community! Whether you're fixing bugs, adding new features, improving documentation, or helping with testing, your contributions are valuable.
 
