@@ -4,7 +4,7 @@ import {
   TourRunner,
   TourConfig,
   useTour,
-} from "react-guided-tour";
+} from "@aladinbs/react-guided-tour";
 
 const tourConfig: TourConfig = {
   id: "comprehensive-showcase",
