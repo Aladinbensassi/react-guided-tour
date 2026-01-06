@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="16" cy="16" r="15" fill="url(#grad)" stroke="#ffffff" stroke-width="2"/>
+  
+  <!-- Tour guide icon - path/route -->
+  <path d="M8 12 L16 8 L24 12 L20 20 L12 20 Z" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Dots representing tour steps -->
+  <circle cx="12" cy="16" r="1.5" fill="#ffffff"/>
+  <circle cx="16" cy="13" r="1.5" fill="#ffffff"/>
+  <circle cx="20" cy="16" r="1.5" fill="#ffffff"/>
+  
+  <!-- Arrow indicating direction -->
+  <path d="M14 22 L16 24 L18 22" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

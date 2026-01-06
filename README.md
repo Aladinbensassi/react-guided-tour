@@ -569,14 +569,4 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 ## 📄 License
 
 MIT License - see [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- Inspired by modern onboarding libraries
-- Built with React 19 and TypeScript
-- Designed for developer experience and user delight
-
----
-
-**Made with ❤️ for the React community**
 # react-guided-tour
