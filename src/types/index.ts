@@ -12,6 +12,8 @@ export interface TourStep {
   canSkip?: boolean;
   waitForElement?: boolean;
   waitTimeout?: number;
+  blockInteractions?: boolean;
+  clickToAdvance?: boolean;
 }
 
 export interface TourAction {
@@ -53,6 +55,8 @@ export interface TourConfig {
   onStepChange?: (step: TourStep, index: number) => void;
   allowKeyboardNavigation?: boolean;
   allowClickOutside?: boolean;
+  blockInteractions?: boolean;
+  clickToAdvance?: boolean;
   showProgress?: boolean;
   storage?: {
     key?: string;

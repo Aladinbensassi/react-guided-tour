@@ -4,10 +4,11 @@ import {
   TourRunner,
   TourConfig,
   useTour,
-} from "@aladinbs/react-guided-tour";
+} from "react-guided-tour";
 
 const tourConfig: TourConfig = {
   id: "comprehensive-showcase",
+  blockInteractions: true,
   steps: [
     {
       id: "welcome",
@@ -46,16 +47,27 @@ const tourConfig: TourConfig = {
       },
     },
     {
-      id: "automated-actions",
-      title: "4. Automated Actions",
+      id: "interaction-blocking",
+      title: "4. Interaction Blocking",
       content:
-        "The tour can perform actions automatically - like clicking this button for you!",
-      target: '[data-tour="action-button"]',
+        "Notice how you can't click on other elements! This step demonstrates interaction blocking - only the highlighted element is clickable.",
+      target: '[data-tour="blocking-demo"]',
       placement: "top",
+      blockInteractions: true,
+    },
+    {
+      id: "click-to-advance",
+      title: "5. Click to Advance",
+      content:
+        "Try clicking the button below! When click-to-advance is enabled, you interact directly with elements to continue the tour.",
+      target: '[data-tour="action-demo"]',
+      placement: "top",
+      clickToAdvance: true,
+      blockInteractions: false,
     },
     {
       id: "theme-customization",
-      title: "5. Theme Customization",
+      title: "6. Theme Customization",
       content:
         "Every aspect is customizable - colors, borders, animations, and positioning.",
       target: '[data-tour="theme-colors"]',
@@ -63,7 +75,7 @@ const tourConfig: TourConfig = {
     },
     {
       id: "responsive-design",
-      title: "6. Responsive & Accessible",
+      title: "7. Responsive & Accessible",
       content:
         "Works perfectly on all devices with full keyboard navigation and screen reader support.",
       target: '[data-tour="responsive-icon"]',
@@ -71,7 +83,7 @@ const tourConfig: TourConfig = {
     },
     {
       id: "advanced-features",
-      title: "7. Advanced Features",
+      title: "8. Advanced Features",
       content:
         "State persistence, event hooks, conditional steps, custom integrations, and more!",
       target: '[data-tour="advanced-title"]',
@@ -79,7 +91,7 @@ const tourConfig: TourConfig = {
     },
     {
       id: "playground",
-      title: "8. Interactive Playground",
+      title: "9. Interactive Playground",
       content:
         "Try different configurations and see the results instantly in our live playground.",
       target: '[data-tour="playground-title"]',
@@ -374,6 +386,23 @@ function App() {
                   Flexible CSS selectors with automatic waiting for dynamic
                   content
                 </p>
+              </div>
+              <div
+                className="bg-white rounded-xl p-6 shadow-lg border border-slate-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                data-tour="blocking-demo"
+              >
+                <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-orange-600 rounded-lg flex items-center justify-center text-white text-2xl mb-4">
+                  🔒
+                </div>
+                <h3 className="text-xl font-semibold text-slate-900 mb-2">
+                  Interaction Blocking
+                </h3>
+                <p className="text-slate-600 mb-4">
+                  Prevent users from clicking outside the tour target for focused guidance
+                </p>
+                <div className="text-sm text-slate-500">
+                  Try clicking elsewhere during the tour!
+                </div>
               </div>
               <div
                 className="bg-white rounded-xl p-6 shadow-lg border border-slate-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1"

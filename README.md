@@ -12,6 +12,8 @@ A modern, flexible React TypeScript tour guide library with advanced highlightin
 - 💾 **State Persistence** - localStorage integration to remember tour completion and progress
 - ⚡ **Performance Optimized** - Framework-agnostic core with efficient React integration
 - 🎪 **Action System** - Automated interactions (clicks, navigation, tab switching)
+- 🔒 **Interaction Blocking** - Prevent user interactions outside the tour target for focused guidance
+- 👆 **Click-to-Advance** - Allow users to click target elements directly to advance tour steps
 - 🔄 **Event System** - Rich event hooks for tour lifecycle management
 - 🎯 **TypeScript First** - Full type safety with comprehensive type definitions
 
@@ -141,6 +143,8 @@ interface TourConfig {
   onStepChange?: (step: TourStep, index: number) => void;
   allowKeyboardNavigation?: boolean;  // Enable keyboard controls
   allowClickOutside?: boolean;        // Allow clicking outside to close
+  blockInteractions?: boolean;        // Block interactions outside tour target
+  clickToAdvance?: boolean;           // Enable click-to-advance globally
   showProgress?: boolean;             // Show step progress indicator
   storage?: {
     key?: string;               // localStorage key (default: 'tour-{id}')
@@ -168,6 +172,8 @@ interface TourStep {
   canSkip?: boolean;            // Allow skipping this step
   waitForElement?: boolean;     // Wait for target element to appear
   waitTimeout?: number;         // Timeout for element waiting (ms)
+  blockInteractions?: boolean;  // Override global interaction blocking for this step
+  clickToAdvance?: boolean;     // Override global click-to-advance for this step
 }
 ```
 
@@ -278,6 +284,92 @@ Navigate through multi-step wizards:
   },
 }
 ```
+
+### Interaction Blocking
+
+Control user interactions during the tour to create focused guidance experiences:
+
+```tsx
+const tourConfig: TourConfig = {
+  id: 'focused-tour',
+  blockInteractions: true,  // Block interactions globally
+  steps: [
+    {
+      id: 'step1',
+      title: 'Focused Step',
+      content: 'Users can only interact with the highlighted element.',
+      target: '#important-button',
+      blockInteractions: true,  // Enforce blocking for this step
+    },
+    {
+      id: 'step2', 
+      title: 'Free Interaction',
+      content: 'Users can click anywhere during this step.',
+      target: '#another-element',
+      blockInteractions: false, // Override global setting for this step
+    },
+  ],
+};
+```
+
+**Features:**
+- **Global Control**: Set `blockInteractions: true` in tour config to block interactions for all steps
+- **Per-Step Override**: Use `blockInteractions` in individual steps to override the global setting
+- **Visual Feedback**: Shows a "🔒 Interactions blocked" indicator when active
+- **Smart Targeting**: Only the highlighted element and tour UI remain interactive
+- **Keyboard Blocking**: Prevents keyboard interactions except tour navigation keys
+
+**When to use:**
+- Complex interfaces where users might get distracted
+- Critical onboarding flows that must be completed in order
+- Preventing accidental clicks that could break the tour flow
+- Ensuring users focus on specific elements
+
+### Click-to-Advance
+
+Enable users to interact directly with tour target elements to advance to the next step:
+
+```tsx
+const tourConfig: TourConfig = {
+  id: "interactive-tour",
+  clickToAdvance: true,  // Enable globally
+  steps: [
+    {
+      id: "button-interaction",
+      title: "Try the Button",
+      content: "Click the button below to continue the tour!",
+      target: "#my-button",
+      clickToAdvance: true,  // Enable for this step
+    },
+    {
+      id: "form-interaction", 
+      title: "Fill the Form",
+      content: "Complete this form field to proceed.",
+      target: "#email-input",
+      clickToAdvance: false, // Disable for this step (use Next button)
+    },
+  ],
+};
+```
+
+**Features:**
+- **Global Control**: Set `clickToAdvance: true` in tour config to enable for all steps
+- **Per-Step Override**: Use `clickToAdvance` in individual steps to override the global setting
+- **Smart UI**: Next button is automatically hidden when click-to-advance is active
+- **Visual Guidance**: Shows "👆 Click the highlighted element to continue" instruction
+- **Event Handling**: Automatically captures clicks on target elements and advances tour
+
+**When to use:**
+- Interactive tutorials where users need to practice using actual UI elements
+- Onboarding flows for buttons, forms, and interactive components
+- Training scenarios where clicking the real element is part of the learning
+- Reducing cognitive load by eliminating the need to find the Next button
+
+**Best practices:**
+- Use for clickable elements like buttons, links, and form controls
+- Combine with `blockInteractions: true` to ensure users click the right element
+- Provide clear instructions in the step content about what to click
+- Consider accessibility - ensure target elements are keyboard accessible
 
 ### Custom Integrations
 

@@ -10,13 +10,34 @@ export interface TourPopoverProps {
 }
 
 export const TourPopover = React.memo(function TourPopover({ className }: TourPopoverProps) {
-  const { state, theme, next, previous, skip, stop, isFirstStep, isLastStep, canGoNext, canGoPrevious } = useTour();
+  const { state, theme, next, previous, skip, stop, isFirstStep, isLastStep, canGoNext, canGoPrevious, config } = useTour();
   const { targetElement } = useTourHighlight(state.currentStep);
   const popoverRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState<PopoverPosition>({ top: 0, left: 0, placement: 'top' });
 
   const updatePosition = useCallback(() => {
-    if (!popoverRef.current || !targetElement || !state.currentStep) return;
+    if (!popoverRef.current || !state.currentStep) return;
+    
+    // For center placement without target element, calculate center position directly
+    if (state.currentStep.placement === 'center' && !targetElement) {
+      const popoverRect = popoverRef.current.getBoundingClientRect();
+      const viewport = {
+        width: window.innerWidth,
+        height: window.innerHeight,
+        scrollTop: window.pageYOffset || document.documentElement.scrollTop,
+        scrollLeft: window.pageXOffset || document.documentElement.scrollLeft,
+      };
+      
+      setPosition({
+        top: viewport.scrollTop + (viewport.height - popoverRect.height) / 2,
+        left: viewport.scrollLeft + (viewport.width - popoverRect.width) / 2,
+        placement: 'center',
+      });
+      return;
+    }
+    
+    // For other placements, require target element
+    if (!targetElement) return;
     
     const newPosition = calculatePopoverPosition(
       targetElement,
@@ -28,6 +49,13 @@ export const TourPopover = React.memo(function TourPopover({ className }: TourPo
 
   const step = state.currentStep;
   const popoverConfig = useMemo(() => step?.popover || {}, [step?.popover]);
+
+  // Determine if click-to-advance is enabled for this step
+  const shouldClickToAdvance = useMemo(() => {
+    const stepClickToAdvance = step?.clickToAdvance;
+    const globalClickToAdvance = config.clickToAdvance;
+    return stepClickToAdvance !== undefined ? stepClickToAdvance : globalClickToAdvance;
+  }, [step?.clickToAdvance, config.clickToAdvance]);
 
   const popoverStyle: React.CSSProperties = useMemo(() => ({
     position: 'absolute',
@@ -77,7 +105,10 @@ export const TourPopover = React.memo(function TourPopover({ className }: TourPo
   }, [stop]);
 
   useEffect(() => {
-    updatePosition();
+    // Small delay to ensure popover is rendered and has dimensions
+    const timeoutId = setTimeout(() => {
+      updatePosition();
+    }, 10);
 
     const handleResize = () => updatePosition();
     const handleScroll = () => updatePosition();
@@ -86,6 +117,7 @@ export const TourPopover = React.memo(function TourPopover({ className }: TourPo
     window.addEventListener('scroll', handleScroll, { passive: true });
 
     return () => {
+      clearTimeout(timeoutId);
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('scroll', handleScroll);
     };
@@ -250,38 +282,60 @@ export const TourPopover = React.memo(function TourPopover({ className }: TourPo
             </button>
           )}
 
-          {/* Next/Finish button */}
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              handleNext();
-            }}
-            disabled={false}
-            style={{
-              backgroundColor: theme.primaryColor || '#3b82f6',
-              borderTopWidth: '0',
-              borderRightWidth: '0',
-              borderBottomWidth: '0',
-              borderLeftWidth: '0',
-              color: 'white',
-              cursor: 'pointer',
-              padding: '8px 16px',
-              borderRadius: '8px',
-              fontSize: '14px',
-              fontWeight: '500',
-              opacity: 1,
-              transition: 'all 0.2s ease',
-              pointerEvents: 'auto',
-              position: 'relative',
-              zIndex: 99999,
-            }}
-          >
-            {isLastStep 
-              ? (popoverConfig.finishLabel || 'Finish')
-              : (popoverConfig.nextLabel || 'Next')
-            }
-          </button>
+          {/* Next/Finish button - hidden when click-to-advance is enabled */}
+          {!shouldClickToAdvance && (
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleNext();
+              }}
+              disabled={false}
+              style={{
+                backgroundColor: theme.primaryColor || '#3b82f6',
+                borderTopWidth: '0',
+                borderRightWidth: '0',
+                borderBottomWidth: '0',
+                borderLeftWidth: '0',
+                color: 'white',
+                cursor: 'pointer',
+                padding: '8px 16px',
+                borderRadius: '8px',
+                fontSize: '14px',
+                fontWeight: '500',
+                opacity: 1,
+                transition: 'all 0.2s ease',
+                pointerEvents: 'auto',
+                position: 'relative',
+                zIndex: 99999,
+              }}
+            >
+              {isLastStep 
+                ? (popoverConfig.finishLabel || 'Finish')
+                : (popoverConfig.nextLabel || 'Next')
+              }
+            </button>
+          )}
+
+          {/* Click-to-advance instruction */}
+          {shouldClickToAdvance && (
+            <div
+              style={{
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                border: '1px solid rgba(59, 130, 246, 0.3)',
+                color: theme.primaryColor || '#3b82f6',
+                padding: '8px 16px',
+                borderRadius: '8px',
+                fontSize: '14px',
+                fontWeight: '500',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+              }}
+            >
+              👆 Click the highlighted element to continue
+            </div>
+          )}
         </div>
       </div>
 
