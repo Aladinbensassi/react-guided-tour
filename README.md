@@ -161,7 +161,8 @@ Individual step configuration:
 interface TourStep {
   id: string;                   // Unique step identifier
   title: string;                // Step title
-  content: string;              // Step description
+  content?: string;             // Step description (optional if contentHtml provided)
+  contentHtml?: string;         // Rich HTML content (takes precedence over content)
   target?: string;              // CSS selector for target element
   placement?: 'top' | 'bottom' | 'left' | 'right' | 'center';
   action?: TourAction;          // Automated action to perform
@@ -464,6 +465,80 @@ const tourConfig: TourConfig = {
 - Previous button is automatically shown on all steps except the first step
 - Clicking previous navigates to the immediately preceding step
 - Button is disabled when navigation is not possible (e.g., during step transitions)
+
+### Rich HTML Content
+
+Create engaging tour content with HTML formatting, links, and interactive elements:
+
+```tsx
+const tourConfig: TourConfig = {
+  id: "html-content-tour",
+  steps: [
+    {
+      id: "welcome",
+      title: "Welcome!",
+      contentHtml: `
+        <p>Welcome to our <strong>amazing</strong> application!</p>
+        <p>This tour will show you:</p>
+        <ul>
+          <li>🎯 <strong>Key features</strong></li>
+          <li>📚 <a href="https://docs.example.com" target="_blank" style="color: #3b82f6;">Documentation</a></li>
+          <li>💡 <em>Pro tips</em> and best practices</li>
+        </ul>
+        <blockquote style="border-left: 3px solid #3b82f6; padding-left: 12px; margin: 12px 0; font-style: italic;">
+          "Great onboarding creates loyal users!"
+        </blockquote>
+        <p><small>💡 Try selecting this text or clicking the link above!</small></p>
+      `,
+      placement: "center",
+    },
+    {
+      id: "features",
+      title: "Rich Content Features",
+      contentHtml: `
+        <div style="background: #f8fafc; padding: 12px; border-radius: 8px; margin: 8px 0;">
+          <h4 style="margin: 0 0 8px 0; color: #1e293b;">✨ What you can include:</h4>
+          <ul style="margin: 0; padding-left: 20px;">
+            <li><strong>Bold</strong> and <em>italic</em> text</li>
+            <li><a href="#" onclick="alert('Link clicked!')">Interactive links</a></li>
+            <li><code style="background: #e2e8f0; padding: 2px 4px; border-radius: 4px;">Code snippets</code></li>
+            <li>Lists, quotes, and custom styling</li>
+          </ul>
+        </div>
+        <p>All content is <span style="background: yellow; padding: 2px;">selectable</span> and interactive!</p>
+      `,
+      target: "#my-element",
+    },
+  ],
+};
+```
+
+**HTML Content Features:**
+
+- **Rich Formatting**: Use HTML tags for bold, italic, lists, quotes, and more
+- **Clickable Links**: External links open in new tabs, internal links work normally
+- **Text Selection**: Users can select and copy text from tour content
+- **Interactive Elements**: Buttons, forms, and other interactive HTML elements work
+- **Custom Styling**: Apply inline styles or CSS classes for custom appearance
+- **Code Snippets**: Include formatted code examples with syntax highlighting
+- **Media Content**: Embed images, videos, or other media (ensure proper sizing)
+
+**Content Priority:**
+- If both `content` and `contentHtml` are provided, `contentHtml` takes precedence
+- Either `content` or `contentHtml` is required (at least one must be provided)
+- HTML content is rendered using `dangerouslySetInnerHTML` - ensure content is safe
+
+**Security Considerations:**
+- Only use trusted HTML content to prevent XSS attacks
+- Sanitize user-generated content before using in `contentHtml`
+- Consider using a library like DOMPurify for content sanitization in production
+
+**Best Practices:**
+- Keep HTML content concise and focused
+- Use semantic HTML elements for better accessibility
+- Test links and interactive elements thoroughly
+- Ensure content is responsive and works on different screen sizes
+- Use consistent styling that matches your application's design system
 
 ### Custom Integrations
 

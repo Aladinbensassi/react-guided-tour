@@ -1,7 +1,8 @@
 export interface TourStep {
   id: string;
   title: string;
-  content: string;
+  content?: string;  // Optional when contentHtml is provided
+  contentHtml?: string;  // Optional HTML content that takes precedence over content
   target?: string;
   placement?: 'top' | 'bottom' | 'left' | 'right' | 'center';
   action?: TourAction;

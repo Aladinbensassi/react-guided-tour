@@ -208,13 +208,27 @@ export const TourPopover = React.memo(function TourPopover({ className }: TourPo
         )}
 
         {/* Content */}
-        <div style={{
-          margin: '0 0 16px 0',
-          lineHeight: '1.5',
-          color: theme.textColor || '#374151',
-        }}>
-          {popoverConfig.content || step?.content}
-        </div>
+        {(step?.contentHtml || step?.content || popoverConfig.content) && (
+          <div style={{
+            margin: '0 0 16px 0',
+            lineHeight: '1.5',
+            color: theme.textColor || '#374151',
+            userSelect: 'text', // Enable text selection
+            cursor: 'text',
+          }}>
+            {step?.contentHtml ? (
+              <div 
+                dangerouslySetInnerHTML={{ __html: step.contentHtml }}
+                style={{
+                  // Ensure links and interactive elements work
+                  pointerEvents: 'auto',
+                }}
+              />
+            ) : (
+              popoverConfig.content || step?.content
+            )}
+          </div>
+        )}
       </div>
 
       {/* Footer */}

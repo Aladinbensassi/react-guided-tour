@@ -12,9 +12,18 @@ const tourConfig: TourConfig = {
   steps: [
     {
       id: "welcome",
-      title: "React Guided Tour - Complete Feature Demo",
-      content:
-        "Experience every feature of our modern tour library. This comprehensive demo shows smart targeting, automated actions, theming, and more!",
+      title: "🎉 Welcome to React Guided Tour!",
+      contentHtml: `
+        <p>Experience every feature of our modern tour library!</p>
+        <p>This comprehensive demo shows:</p>
+        <ul>
+          <li><strong>Smart targeting</strong> and automated actions</li>
+          <li><strong>Rich HTML content</strong> with <a href="https://github.com/aladinbensassi/react-guided-tour" target="_blank" style="color: #3b82f6; text-decoration: underline;">clickable links</a></li>
+          <li><strong>Interactive elements</strong> and text selection</li>
+          <li>And much more! 🚀</li>
+        </ul>
+        <p><em>Try selecting this text or clicking the link above!</em></p>
+      `,
       placement: "center",
     },
     {
@@ -31,8 +40,19 @@ const tourConfig: TourConfig = {
     {
       id: "basic-example",
       title: "2. Basic Usage Example",
-      content:
-        "This shows the minimal code needed to create your first tour. Notice the clean API design.",
+      contentHtml: `
+        <p>This shows the minimal code needed to create your first tour.</p>
+        <p>Key features:</p>
+        <ul>
+          <li>🎯 <strong>Clean API design</strong></li>
+          <li>📝 <strong>Rich HTML content</strong> support</li>
+          <li>🔗 Links like <a href="https://reactjs.org" target="_blank" style="color: #3b82f6;">React docs</a></li>
+          <li>✨ <em>Selectable text</em> for copy-paste</li>
+        </ul>
+        <blockquote style="border-left: 3px solid #3b82f6; padding-left: 12px; margin: 12px 0; font-style: italic; color: #6b7280;">
+          "The best user onboarding experience starts with great content!"
+        </blockquote>
+      `,
       target: '[data-tour="basic-title"]',
       placement: "bottom",
     },
