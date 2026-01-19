@@ -118,8 +118,6 @@ export const TourOverlay = React.memo(function TourOverlay({ className }: TourOv
     targetElement.style.zIndex = String((theme.zIndex || 9999) + 1);
 
     const handleTargetClick = (_e: Event) => {
-      // Don't prevent default or stop propagation - let the element's normal behavior work
-      // Just advance the tour after a small delay to allow the click to be processed
       setTimeout(() => {
         next();
       }, 100);

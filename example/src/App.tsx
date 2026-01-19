@@ -24,6 +24,9 @@ const tourConfig: TourConfig = {
         "Start here - copy the installation command and see how easy it is to get started.",
       target: '[data-tour="install-title"]',
       placement: "bottom",
+      previousButton: {
+        show: false,
+      },
     },
     {
       id: "basic-example",
@@ -64,6 +67,12 @@ const tourConfig: TourConfig = {
       placement: "top",
       clickToAdvance: true,
       blockInteractions: false,
+      previousButton: {
+        label: "Go Back",
+        handler: async () => {
+          alert("Custom previous button clicked! You can add any logic here.");
+        },
+      },
     },
     {
       id: "theme-customization",

@@ -91,10 +91,15 @@ export const TourPopover = React.memo(function TourPopover({ className }: TourPo
   }, [canGoNext, isLastStep, next]);
 
   const handlePrevious = useCallback(async () => {
+    if (step?.previousButton?.handler) {
+      await step.previousButton.handler();
+      return;
+    }
+    
     if (canGoPrevious) {
       await previous();
     }
-  }, [canGoPrevious, previous]);
+  }, [canGoPrevious, previous, step?.previousButton]);
 
   const handleSkip = useCallback(async () => {
     await skip();
@@ -250,7 +255,7 @@ export const TourPopover = React.memo(function TourPopover({ className }: TourPo
 
         <div style={{ display: 'flex', gap: '8px', marginLeft: 'auto' }}>
           {/* Previous button */}
-          {!isFirstStep && (
+          {!isFirstStep && (step?.previousButton?.show !== false) && (
             <button
               onClick={handlePrevious}
               disabled={!canGoPrevious}
@@ -278,7 +283,7 @@ export const TourPopover = React.memo(function TourPopover({ className }: TourPo
                 transition: 'all 0.2s ease',
               }}
             >
-              Previous
+              {step?.previousButton?.label || 'Previous'}
             </button>
           )}
 

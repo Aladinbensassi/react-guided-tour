@@ -14,6 +14,7 @@ export interface TourStep {
   waitTimeout?: number;
   blockInteractions?: boolean;
   clickToAdvance?: boolean;
+  previousButton?: PreviousButtonConfig;
 }
 
 export interface TourAction {
@@ -22,6 +23,12 @@ export interface TourAction {
   value?: string | number | Record<string, string | number | boolean>;
   handler?: () => Promise<void> | void;
   delay?: number;
+}
+
+export interface PreviousButtonConfig {
+  show?: boolean;
+  label?: string;
+  handler?: () => Promise<void> | void;
 }
 
 export interface HighlightConfig {

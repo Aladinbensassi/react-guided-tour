@@ -174,6 +174,7 @@ interface TourStep {
   waitTimeout?: number;         // Timeout for element waiting (ms)
   blockInteractions?: boolean;  // Override global interaction blocking for this step
   clickToAdvance?: boolean;     // Override global click-to-advance for this step
+  previousButton?: PreviousButtonConfig;  // Configure previous button behavior
 }
 ```
 
@@ -188,6 +189,18 @@ interface TourAction {
   value?: any;                  // Action-specific value
   handler?: () => Promise<void> | void;  // Custom action handler
   delay?: number;               // Delay before action (ms)
+}
+```
+
+### PreviousButtonConfig
+
+Configure the previous button behavior for individual steps:
+
+```tsx
+interface PreviousButtonConfig {
+  show?: boolean;               // Show/hide the previous button (default: true)
+  label?: string;               // Custom button label (default: "Previous")
+  handler?: () => Promise<void> | void;  // Custom click handler
 }
 ```
 
@@ -370,6 +383,87 @@ const tourConfig: TourConfig = {
 - Combine with `blockInteractions: true` to ensure users click the right element
 - Provide clear instructions in the step content about what to click
 - Consider accessibility - ensure target elements are keyboard accessible
+
+### Configurable Previous Button
+
+Control the previous button's visibility, label, and behavior for each step:
+
+```tsx
+const tourConfig: TourConfig = {
+  id: "custom-navigation-tour",
+  steps: [
+    {
+      id: "welcome",
+      title: "Welcome",
+      content: "Welcome to our tour!",
+      placement: "center",
+      // No previous button configuration - uses defaults
+    },
+    {
+      id: "first-step",
+      title: "Getting Started",
+      content: "This is the first step with no previous button.",
+      target: "#first-element",
+      previousButton: {
+        show: false, // Hide previous button completely
+      },
+    },
+    {
+      id: "custom-previous",
+      title: "Custom Previous",
+      content: "This step has a custom previous button.",
+      target: "#second-element",
+      previousButton: {
+        label: "Go Back",
+        handler: async () => {
+          // Custom logic - could navigate to a different step,
+          // show a confirmation dialog, save data, etc.
+          const confirmed = confirm("Are you sure you want to go back?");
+          if (confirmed) {
+            // You can access tour methods here if needed
+            console.log("Custom previous action executed");
+          }
+        },
+      },
+    },
+    {
+      id: "normal-step",
+      title: "Normal Step",
+      content: "This step uses the default previous button behavior.",
+      target: "#third-element",
+      // previousButton not specified - uses default behavior
+    },
+  ],
+};
+```
+
+**Configuration Options:**
+
+- **`show: boolean`** - Control visibility of the previous button
+  - `true` (default): Show the previous button
+  - `false`: Hide the previous button completely
+
+- **`label: string`** - Customize the button text
+  - Default: "Previous"
+  - Examples: "Go Back", "← Back", "Return", etc.
+
+- **`handler: () => Promise<void> | void`** - Custom click behavior
+  - When provided, overrides the default previous step navigation
+  - Can be async for complex operations
+  - Useful for confirmations, data saving, custom navigation logic
+
+**Use Cases:**
+- **Hide on first content step**: Prevent users from going back to welcome screen
+- **Custom confirmations**: Ask users to confirm before losing progress
+- **Data validation**: Save or validate data before allowing navigation
+- **Custom navigation**: Jump to specific steps instead of sequential navigation
+- **Analytics tracking**: Log user navigation patterns
+- **Conditional logic**: Show different behavior based on user state
+
+**Default Behavior:**
+- Previous button is automatically shown on all steps except the first step
+- Clicking previous navigates to the immediately preceding step
+- Button is disabled when navigation is not possible (e.g., during step transitions)
 
 ### Custom Integrations
 
