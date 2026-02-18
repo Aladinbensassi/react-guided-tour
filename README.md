@@ -1,4 +1,6 @@
 # Demo
+**You can try it out here:**
+
 👉 https://aladin-react-tour-guide.netlify.app/
 
 # React Guided Tour
